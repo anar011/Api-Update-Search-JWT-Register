@@ -2,9 +2,11 @@
 using Domain.Models;
 using Repository.Repositories.Interfaces;
 using Services.DTOs.City;
+using Services.DTOs.Country;
 using Services.Services.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,34 +33,37 @@ namespace Services.Services
         
              
 
-        public Task DeleteAsync(int? id)
+        public async Task DeleteAsync(int? id)=> await _cityRepo.DeleteAsync(await _cityRepo.GetByIdAsync(id));
+
+
+        public async Task<IEnumerable<CityDto>> GetAllAsync()=> _mapper.Map<IEnumerable<CityDto>>(await _cityRepo.FindAllAsync());
+
+
+        public async Task<CityDto> GetByIdAsync(int? id) => _mapper.Map<CityDto>(await _cityRepo.GetByIdAsync(id));
+
+
+        public async Task<IEnumerable<CityDto>> SearchAsync(string? searchText)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(searchText))
+                return _mapper.Map<IEnumerable<CityDto>>(await _cityRepo.FindAllAsync());
+
+            return _mapper.Map<IEnumerable<CityDto>>(await _cityRepo.FindAllAsync(m => m.Name.Contains(searchText)));
         }
 
-        public Task<IEnumerable<CityDto>> GetAllAsync()
+        public async Task SoftDeleteAsync(int? id)
         {
-            throw new NotImplementedException();
+            await _cityRepo.SoftDeleteAsync(id);
         }
 
-        public Task<CityDto> GetByIdAsync(int? id)
+        public async Task UpdateAsync(int? id, CityUpdateDto city)
         {
-            throw new NotImplementedException();
-        }
+            if (id is null) throw new ArgumentNullException();
 
-        public Task<IEnumerable<CityDto>> SearchAsync(string? searchText)
-        {
-            throw new NotImplementedException();
-        }
+            var existCity = await _cityRepo.GetByIdAsync(id) ?? throw new NullReferenceException();
 
-        public Task SoftDeleteAsync(int? id)
-        {
-            throw new NotImplementedException();
-        }
+            _mapper.Map(city, existCity);
 
-        public Task UpdateAsync(int? id, CityUpdateDto city)
-        {
-            throw new NotImplementedException();
+            await _cityRepo.UpdateAsync(existCity);
         }
     }
 }
