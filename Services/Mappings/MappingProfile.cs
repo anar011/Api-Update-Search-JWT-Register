@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Domain.Models;
+using Services.DTOs.Account;
 using Services.DTOs.City;
 using Services.DTOs.Country;
 using Services.DTOs.Employee;
@@ -23,6 +24,9 @@ namespace Services.Mappings
             CreateMap<Country, CountryDto>().ReverseMap();
             CreateMap<CountryCreateDto, Country>();
             CreateMap<CountryUpdateDto, Employee>();
+
+
+            CreateMap<RegisterDto, AppUser>();
 
 
 

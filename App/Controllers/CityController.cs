@@ -1,13 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services.DTOs.City;
-using Services.DTOs.Country;
 using Services.Services.Interfaces;
 using System.ComponentModel.DataAnnotations;
 
 namespace App.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class CityController : ControllerBase
     {
@@ -143,10 +142,6 @@ namespace App.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
-
-
-
 
     }
 }

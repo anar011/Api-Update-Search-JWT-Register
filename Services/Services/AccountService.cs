@@ -1,4 +1,8 @@
-﻿using Services.DTOs.Account;
+﻿using AutoMapper;
+using Domain.Models;
+using Microsoft.AspNetCore.Identity;
+using Services.DTOs.Account;
+using Services.Helpers.Responses;
 using Services.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -10,9 +14,30 @@ namespace Services.Services
 {
     public class AccountService : IAccountService
     {
-        public async Task SignUpAsync(RegisterDto model)
+        private readonly UserManager<AppUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IMapper _mapper;
+
+        public AccountService(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager,IMapper mapper)
         {
-            throw new NotImplementedException();
+            _userManager = userManager;
+            _roleManager = roleManager;
+            _mapper = mapper;
         }
+        public async Task<AuthResponse> SignUpAsync(RegisterDto model)
+        {
+            AppUser user = _mapper.Map<AppUser>(model);
+
+            IdentityResult result = await _userManager.CreateAsync(user,model.Password);
+
+            if (result.Succeeded)
+            {
+                return new AuthResponse { StatusMessage = "Failed", Errors = result.Errors.Select(m => m.Description).ToList() };
+            }
+
+
+            return new AuthResponse { Errors = null, StatusMessage = "Success" };
+        }
+            
     }
 }
